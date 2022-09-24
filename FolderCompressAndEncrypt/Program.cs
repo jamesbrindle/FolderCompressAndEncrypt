@@ -20,6 +20,8 @@ namespace FolderCompressAndEncrypt
 
         private static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
+
             ConsoleEx.WriteColouredLine("-----------------------------------------", ConsoleColor.Cyan);
             ConsoleEx.WriteColouredLine("-- Folder Compress And Encrypt Utility --", ConsoleColor.Cyan);
             ConsoleEx.WriteColouredLine("-----------------------------------------\n", ConsoleColor.Cyan);
@@ -232,6 +234,21 @@ namespace FolderCompressAndEncrypt
         private static string GetVersion()
         {
             return Assembly.GetCallingAssembly().GetName().Version.ToString();
+        }
+
+        /// <summary>
+        /// Dependencies are embedded in this dependency, we may need to extract them
+        /// </summary>
+        /// <returns>Loaded assembly</returns>
+        private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (args.Name.Contains("SevenZipSharp"))
+                return Assembly.LoadFile(
+                    EmbeddedResourceHelper.GetEmbeddedResourcePath(
+                        TargetAssemblyType.Executing, 
+                        "SevenZipSharp.dll", "Embed"));
+            else
+                return null;
         }
     }
 }

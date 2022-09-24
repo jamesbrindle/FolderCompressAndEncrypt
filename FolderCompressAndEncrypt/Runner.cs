@@ -13,7 +13,9 @@ namespace FolderCompressAndEncrypt
         private static SevenZipCompressor _compressor = null;
         private static List<string> _files = null;
 
-
+        /// <summary>
+        /// Run the main compress and encrypt or decompress operation
+        /// </summary>
         public static void Run()
         {
             Program.Logger.Log(Logger.LogType.Header, "Main Operation Started");
@@ -37,11 +39,18 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Space();
         }
 
+        /// <summary>
+        /// Sub-method to Setup 7z compression object with options
+        /// </summary>
         private static void SetCompressionOptions()
         {
             Program.Logger.Log(Logger.LogType.Header, "Setting Compression Options");
 
-            SevenZipBase.SetLibraryPath(@".\x64\7z.dll");
+            SevenZipBase.SetLibraryPath(
+                EmbeddedResourceHelper.GetEmbeddedResourcePath(
+                        TargetAssemblyType.Executing,
+                        "7z.dll", "Embed"));
+
             _compressor = new SevenZipCompressor(Program.OptionValues.TempPath);
             _compressor.EncryptHeaders = true;
             _compressor.ZipEncryptionMethod = ZipEncryptionMethod.Aes128;
@@ -79,6 +88,9 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Space();
         }
 
+        /// <summary>
+        /// Gathers files list to compress and calls the method to compress them
+        /// </summary>
         private static void CompressFilesList()
         {
             ConsoleEx.WriteColouredLine("Compressing...", ConsoleColor.Yellow);
@@ -198,6 +210,11 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Space();
         }
 
+        /// <summary>
+        /// Compress an individual file 
+        /// </summary>
+        /// <param name="inputFile">File path to compress</param>
+        /// <param name="outputFile">Output path of 7z compressed archive</param>
         private static void CompressFile(string inputFile, string outputFile)
         {
             if (!string.IsNullOrEmpty(Program.OptionValues.Password))
@@ -206,6 +223,9 @@ namespace FolderCompressAndEncrypt
                 _compressor.CompressFiles(outputFile, inputFile);
         }
 
+        /// <summary>
+        /// For source file deletion monitoring (a sort of 'sync') - delete the remaining archive if the original source file not present
+        /// </summary>
         private static void DeleteArchivesWithoutSource()
         {
             Program.Logger.Log(Logger.LogType.Header, "Output Folder Cleanup Started");
@@ -283,6 +303,9 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Space();
         }
 
+        /// <summary>
+        /// Delete any empty folders in output directory recursively
+        /// </summary>
         public static void DeleteEmptyFoldersFromOutputPath()
         {
             Program.Logger.Log(Logger.LogType.Info, $"Deleting any empty folder(s) in the destination...");
@@ -309,6 +332,10 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Log(Logger.LogType.Info, $"Empty folder deletion complete ");
         }
 
+        /// <summary>
+        /// Delete any temporary files created by this utility and 7z
+        /// </summary>
+        /// <param name="last">Cleanup order (just displays a different message)</param>
         private static void CleanupTemporaryFiles(bool last)
         {
             Program.Logger.Log(Logger.LogType.Info, $"{(last ? "Re-" : "")}Cleaning up any temporary files...");
