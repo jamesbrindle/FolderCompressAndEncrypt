@@ -50,8 +50,8 @@ namespace FolderCompressAndEncrypt
             //    "-c",
             //    "-p", "2BConfirmed!" };
 
-            //args = new string[] {
-            //    "-h" };
+            args = new string[] {
+                "-h" };
 #endif
             /*
              * DEBUG END
@@ -123,8 +123,8 @@ namespace FolderCompressAndEncrypt
 
                     Console.Write(
                          "This utility will compress each file in a folder structure (7z) into its own compressed archived (1 file per archive).\n" +
-                         "Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - recursive option is used.\n" +
-                         "You have the option to encrypt the archive filename and password protect each archive. You will need to provide the password when decrypting.\n" +
+                         "Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - recursive option is used.\n\n" +
+                         "You have the option to encrypt the archive filename and password protect each archive. You will need to provide the password when decrypting.\n\n" +
                          "When you uncompress and decrypt, the filenames and folder structure will be restored.\n\n" +
 
                          "The intention of this application is for secure backups, so you can run again and again on the same input folder and output folder and only " +
