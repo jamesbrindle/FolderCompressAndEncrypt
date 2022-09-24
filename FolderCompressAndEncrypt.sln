@@ -10,6 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README.md", "README.md", "{
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7z-Dependency", "7z-Dependency", "{76023700-D39F-46F6-9367-18C2892C8AF6}"
+	ProjectSection(SolutionItems) = preProject
+		7z - Dependency to Install\7z-x64.msi = 7z - Dependency to Install\7z-x64.msi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

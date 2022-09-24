@@ -223,6 +223,11 @@ namespace FolderCompressAndEncrypt
                 _compressor.CompressFiles(outputFile, inputFile);
         }
 
+        private void DecompressFiles()
+        {
+
+        }
+
         /// <summary>
         /// For source file deletion monitoring (a sort of 'sync') - delete the remaining archive if the original source file not present
         /// </summary>
