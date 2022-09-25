@@ -27,7 +27,10 @@ namespace Fce
             ConsoleEx.WriteColouredLine("-----------------------------------------\n", ConsoleColor.Cyan);
 
             if (args == null || args.Length == 0)
-                ConsoleEx.WriteColouredLine("Command line arguments expected! Use fla -h for options.", ConsoleColor.Yellow);
+            {
+                ConsoleEx.WriteColouredLine("Command line arguments expected! Use fla -h for options.\n", ConsoleColor.Yellow);
+                return;
+            }
 
             try
             {
@@ -95,7 +98,7 @@ namespace Fce
 
                     Console.Write(
                          "This utility will compress each file in a folder structure (7z) into its own compressed archived (1 file per archive).\n" +
-                         "Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - recursive option is used.\n\n" +
+                         "Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - \nrecursive option is used.\n\n" +
                          "You have the option to encrypt the archive filename and password protect each archive. You will need to provide the password when decrypting.\n\n" +
                          "When you uncompress and decrypt, the filenames and folder structure will be restored.\n\n" +
 
