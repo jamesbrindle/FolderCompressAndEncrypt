@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Fce.Utils
 {
-    public enum TargetAssemblyType
+    internal enum TargetAssemblyType
     {
         Calling,
         Executing
@@ -13,7 +13,7 @@ namespace Fce.Utils
     /// <summary>
     /// Methods for extracting and utilising resources embedded in the DLL (including assemblies and command line utilities)
     /// </summary>
-    public static class EmbeddedResourceHelper
+    internal static class EmbeddedResourceHelper
     {
         /// <summary>
         /// Returns the embedded resource if it's present in the working folder or if it's been extracted. If it's not present it will extract the embedded resource
@@ -26,7 +26,7 @@ namespace Fce.Utils
         /// <param name="resourcePath">i.e. the folder as a namename excluding the assembly name. I.e. Dependencies.Helpers</param>
         /// <param name="targetAssemblyType">I.e. Calling or Executing</param>
         /// <returns>Full path to present or extracted directory</returns>
-        public static string GetEmbeddedResourcePath(
+        internal static string GetEmbeddedResourcePath(
             TargetAssemblyType targetAssemblyType,
             string fileName,
             string resourcePath)
@@ -48,7 +48,7 @@ namespace Fce.Utils
         /// <param name="resourcePath">i.e. the folder as a namename excluding the assembly name. I.e. Dependencies.Helpers</param>
         /// <param name="targetAssembly">A given assembly (i.e. You can do Assembly.GetCallingAssembly() or Assembly.GetExecutingAssembly()</param>
         /// <returns>Full path to present or extracted directory</returns>
-        public static string GetEmbeddedResourcePath(
+        internal static string GetEmbeddedResourcePath(
             Assembly targetAssembly,
             string fileName,
             string resourcePath)
@@ -82,7 +82,7 @@ namespace Fce.Utils
         /// <param name="resourcePath">i.e. the folder as a namename excluding the assembly name. I.e. Dependencies.Helpers</param>
         /// <param name="outputDirectory">The parent directory to outoput to</param>
         /// <param name="targetAssemblyType">I.e Calling or executing</param>
-        public static void ExtractEmbeddedResource(
+        internal static void ExtractEmbeddedResource(
             TargetAssemblyType targetAssemblyType,
             string fileName,
             string resourcePath,
@@ -93,7 +93,7 @@ namespace Fce.Utils
                 fileName,
                 resourcePath,
                 outputDirectory);
-        }      
+        }
 
         /// <summary>
         /// Extracts an embedded resource to a given location.
@@ -102,7 +102,7 @@ namespace Fce.Utils
         /// <param name="resourcePath">i.e. the folder as a namename excluding the assembly name. I.e. Dependencies.Helpers</param>
         /// <param name="outputDirectory">The parent directory to outoput to</param>
         /// <param name="targetAssembly">A given assembly (i.e. You can do Assembly.GetCallingAssembly() or Assembly.GetExecutingAssembly()</param>
-        public static void ExtractEmbeddedResource(
+        internal static void ExtractEmbeddedResource(
             Assembly targetAssembly,
             string fileName,
             string resourcePath,
@@ -166,7 +166,7 @@ namespace Fce.Utils
         /// <summary>
         /// Get assembly - Calling or executing by TargetAssemblyType enum
         /// </summary>
-        public static Assembly GetTargetAssembly(TargetAssemblyType targetAssemblyType)
+        internal static Assembly GetTargetAssembly(TargetAssemblyType targetAssemblyType)
         {
             return targetAssemblyType == TargetAssemblyType.Calling
                 ? Assembly.GetCallingAssembly()

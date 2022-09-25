@@ -9,7 +9,7 @@ namespace Fce.Utils
     /// Methods for encrypting and decrypting strings, it also try to compress the strings so the result is shortened as much as possible.
     /// Handy when dealing with paths since an encrypted string is always longer.
     /// </summary>
-    public static class StringEncrypt
+    internal static class StringEncrypt
     {
         /// <summary>
         /// Encrypt a string. It it also try to compress the strings so the result is shortened as much as possible.
@@ -17,7 +17,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="clearText">The string to encrypt</param>
         /// <returns>The encrypted string</returns>
-        public static string Encrypt(string clearText)
+        internal static string Encrypt(string clearText)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(clearText);
             using (var memoryStream = new MemoryStream())
@@ -36,7 +36,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="cipherText">The string to decrypt</param>
         /// <returns>The decrypted string</returns>
-        public static string Decrypt(string cipherText)
+        internal static string Decrypt(string cipherText)
         {
             cipherText = cipherText.Replace("Š", "");
             cipherText = cipherText.Replace("-", "/");

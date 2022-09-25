@@ -23,15 +23,15 @@ namespace Fce
 
 #if DEBUG
             // Compress
-            args = new string[] {
-                "-i", @"c:\temp",
-                "-o", @"c:\temp",
-                "-m", "none",
-                "-r",
-                "-l", // default log path
-                "-e",
-                "-c",                
-                "-p", "SomePassword" };
+            //args = new string[] {
+            //    "-i", @"c:\temp",
+            //    "-o", @"c:\temp",
+            //    "-m", "none",
+            //    "-r",
+            //    "-l", // default log path
+            //    "-e",
+            //    "-c",                
+            //    "-p", "SomePassword" };
 
             // Extract
             //args = new string[] {
@@ -45,9 +45,9 @@ namespace Fce
             //    "-c",
             //    "-p", "SomePassword" };
 
-            // Help
-            //args = new string[] {
-            //    "-h" };
+           // Help
+           args = new string[] {
+                "-h" };
 #endif
 
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
@@ -124,21 +124,28 @@ namespace Fce
 
                 if (OptionValues.ShowHelp)
                 {
-                    ConsoleEx.WriteColouredLine($"Version: {GetVersion()}, By James Brindle\n", ConsoleColor.Green);
-
-                    Console.Write(
-                         "This utility will compress each file in a folder structure (7z) into its own compressed archived (1 file per archive).\n" +
-                         "Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - \nrecursive option is used.\n\n" +
-                         "You have the option to encrypt the archive filename and password protect each archive. You will need to provide the password when decrypting.\n\n" +
-                         "When you uncompress and decrypt, the filenames and folder structure will be restored.\n\n" +
-
-                         "The intention of this application is for secure backups, so you can run again and again on the same input folder and output folder and only " +
-                         "the changes will written, however, you can use options '-f' and '-n' to alter this behaviour.\n\n" +
-
-                         "Remember to wrap paths that contains spaces with double quotes, i.e: ");
-
-                    ConsoleEx.WriteColoured("\"c:\\Some Path\\Some Subpath\".\n\n", ConsoleColor.Yellow);
-                    Console.WriteLine("The available options / arguments are as follows:\n\n");
+                    ConsoleEx.WriteColouredLine($"Version: {GetVersion()}, By James Brindle", ConsoleColor.Green);
+                    ConsoleEx.EndParagraph();
+                    ConsoleEx.WordWrap("This utility will compress each file in a folder structure (7z) into its own compressed archived (1 file per archive).");
+                    ConsoleEx.EndParagraph();
+                    Console.WriteLine();
+                    ConsoleEx.WordWrap("Directories will be created in the output folder maintaining the folder structure of the input folder if the '-r' - recursive option is used.");
+                    ConsoleEx.EndParagraph();
+                    Console.WriteLine();
+                    ConsoleEx.WordWrap("You have the option to encrypt the archive filename and password protect each archive. You will need to provide the password when decrypting.");
+                    ConsoleEx.EndParagraph();
+                    Console.WriteLine();
+                    ConsoleEx.WordWrap("When you uncompress and decrypt, the filenames and folder structure will be restored.");
+                    Console.WriteLine();
+                    ConsoleEx.EndParagraph();
+                    ConsoleEx.WordWrap("The intention of this application is for secure backups, so you can run again and again on the same input folder and output folder and only " +
+                                        "the changes will written, however, you can use options '-f' and '-n' to alter this behaviour.");
+                    ConsoleEx.EndParagraph();
+                    Console.WriteLine();
+                    ConsoleEx.WordWrap("Remember to wrap paths that contains spaces with double quotes, i.e: \"c:\\Some Path\\Some Subpath\".");
+                    ConsoleEx.EndParagraph();
+                    Console.WriteLine();
+                    ConsoleEx.WriteColouredLine("The available options / arguments are as follows:\n", ConsoleColor.Yellow);
 
                     p.WriteOptionDescriptions(Console.Out);
                     return;

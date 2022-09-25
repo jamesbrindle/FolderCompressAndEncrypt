@@ -14,7 +14,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="targetDirectory">Parent directory</param>
         /// <returns>List of directories (string)</string></returns>
-        public static List<string> GetAllDirectoriesTraversive(this string targetDirectory, bool ignoreSystem = true)
+        internal static List<string> GetAllDirectoriesTraversive(this string targetDirectory, bool ignoreSystem = true)
         {
             targetDirectory = targetDirectory.LongPathSafe();
             List<string> directories = new List<string>();
@@ -31,7 +31,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="targetDirectory">Parent directory</param>
         /// <returns>List of files (string)</string></returns>
-        public static List<string> GetAllFilesTraversive(string targetDirectory, bool ignoreSystem = true)
+        internal static List<string> GetAllFilesTraversive(string targetDirectory, bool ignoreSystem = true)
         {
             targetDirectory = targetDirectory.LongPathSafe();
 
@@ -104,7 +104,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="targetDirectory">Parent directory</param>
         /// <returns>List of FileInfo objects</string></returns>
-        public static List<FileInfo> GetAllFileInfoTraversive(string targetDirectory, bool ignoreSystem = true)
+        internal static List<FileInfo> GetAllFileInfoTraversive(string targetDirectory, bool ignoreSystem = true)
         {
             targetDirectory = targetDirectory.LongPathSafe();
 
@@ -206,7 +206,7 @@ namespace Fce.Utils
         /// </summary>
         /// <param name="path">Path of file to check if locked</param>
         /// <returns>True is locked, false otherwise</returns>
-        public static bool IsFileLocked(string path)
+        internal static bool IsFileLocked(string path)
         {
             path = path.LongPathSafe();
             // it must exist for it to be locked
