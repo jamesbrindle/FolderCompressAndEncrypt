@@ -23,7 +23,7 @@ namespace Fce
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
 
             ConsoleEx.WriteColouredLine("-----------------------------------------", ConsoleColor.Cyan);
-            ConsoleEx.WriteColouredLine("-- Folder Compress And Encrypt Utility --", ConsoleColor.Cyan);
+            ConsoleEx.WriteColouredLine("-- Folder Compress and Encrypt Utility --", ConsoleColor.Cyan);
             ConsoleEx.WriteColouredLine("-----------------------------------------\n", ConsoleColor.Cyan);
 
             if (args == null || args.Length == 0)

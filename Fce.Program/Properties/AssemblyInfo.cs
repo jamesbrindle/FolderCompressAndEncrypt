@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Folder Compress And Encrypt")]
+[assembly: AssemblyTitle("Folder Compress and Encrypt Utility")]
 [assembly: AssemblyDescription("Compress and encrypt (and decrypt and uncompress) a folder stucture to individual, optionally password protected, encrypted (included output path) .7z files, also allowing a sort of 'sync' to continually process a folder, skipping the existing and deleting if the source has been deleted.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JB-Net Software Solutions")]
-[assembly: AssemblyProduct("Folder Compress And Encrypt")]
+[assembly: AssemblyProduct("Folder Compress and Encrypt")]
 [assembly: AssemblyCopyright("Copyright ©  2022 JB-Net Software Solutions")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
