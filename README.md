@@ -101,11 +101,24 @@ fce -i "C:\Folder to Backup" -o "C:\Backup Location" -m high -rec -p "YOUR PASSW
 
 ## Dependencies 
 
+### 7z
+
 This utility uses the free (but awesome) compression program '7Zip' - Available here: https://www.7-zip.org/download.html which should ideally be installed.
 
 There is also an MSI installer for 7zip in the '7z - **Dependency to Install** folder within this repository.
 
 This utility uses the 64-bit 7z.dll assembly, for the 7z interop to 7z.
+
+### .NET 4.8
+
+Anything equal to or greater than .NET 4.8
+
+## Building
+
+Should be straighforward to build, basic console app, self contained, no nuget packages requires.
+
+**NOTE:** I'd advise you to build in x64 configuration only. This application will select which 7z.dll to use at runtime, but there isn't an 'any-cpu' runtime for it,
+so I'd use x64 bit for performance and better memory, needed for large file compression.
 
 
 

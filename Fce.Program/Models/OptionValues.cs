@@ -1,9 +1,12 @@
-﻿using FolderCompressAndEncrypt.Models.Enums;
+﻿using Fce.Models.Enums;
 using System.ComponentModel;
 using System.IO;
 
-namespace FolderCompressAndEncrypt.Models
+namespace Fce.Models
 {
+    /// <summary>
+    /// Model store for program options and set from command line arguments (or defaulted if not set and not required)
+    /// </summary>
     public class OptionValues
     {
         /// <summary>

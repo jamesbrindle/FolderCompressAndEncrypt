@@ -188,7 +188,7 @@ using MessageLocalizerConverter = System.Converter<string, string>;
 #if NDESK_OPTIONS
 namespace NDesk.Options
 #else
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 #endif
 {
     internal static class StringCoda

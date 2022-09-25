@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 {
     /// <summary>
     /// Methods for encrypting and decrypting strings, it also try to compress the strings so the result is shortened as much as possible.

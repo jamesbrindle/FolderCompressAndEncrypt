@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 {
     internal class StringLengthEncode
     {

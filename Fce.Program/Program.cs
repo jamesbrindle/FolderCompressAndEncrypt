@@ -1,10 +1,10 @@
-﻿using FolderCompressAndEncrypt.Models;
-using FolderCompressAndEncrypt.Utils;
+﻿using Fce.Models;
+using Fce.Utils;
 using System;
 using System.IO;
 using System.Reflection;
 
-namespace FolderCompressAndEncrypt
+namespace Fce
 {
     internal class Program
     {
@@ -30,6 +30,7 @@ namespace FolderCompressAndEncrypt
              * DEBUG
             */
 #if DEBUG
+            // Compress
             args = new string[] {
                 "-i", @"c:\temp",
                 "-o", @"c:\temp",
@@ -38,20 +39,23 @@ namespace FolderCompressAndEncrypt
                 "-l", // default log path
                 "-e",
                 "-c",
-                "-p", "2BConfirmed!" };
+                "-p", "SomePassword" };
 
+            // Extract
             //args = new string[] {
             //    "-i", @"c:\temp",
             //    "-o", @"c:\temp",
             //    "-m", "none",
             //    "-r",
-            //    @"-l=c:\temp", // specify log path
+            //    "-d",
+            //    "-l", // default log path
             //    "-e",
             //    "-c",
-            //    "-p", "2BConfirmed!" };
+            //    "-p", "SomePassword" };
 
-            args = new string[] {
-                "-h" };
+            // Help
+            //args = new string[] {
+            //    "-h" };
 #endif
             /*
              * DEBUG END
@@ -74,7 +78,7 @@ namespace FolderCompressAndEncrypt
 
                 { "l|log:",
                   OptionValues.LogPath.Description<OptionValues>("LogPath"),
-                  (v) => { OptionValues.LoggingEnabled = v != null; OptionValues.LogPath = v == null ? OptionValues.LogPath : v; } },
+                  (v) => { OptionValues.LoggingEnabled = true; OptionValues.LogPath = v == null ? OptionValues.LogPath : v; } },
 
                 { "d|decompress",
                   OptionValues.Decompressing.Description<OptionValues>("Decompressing"),
@@ -148,21 +152,24 @@ namespace FolderCompressAndEncrypt
 
                     Logger = new Logger(OptionValues.LogPath, OptionValues.LoggingEnabled);
                     Logger.Log(Logger.LogType.Header, "Arguments Validation Started");
-
                     Logger.Log(Logger.LogType.Info, "Checking given input path...");
+
                     if (string.IsNullOrWhiteSpace(OptionValues.InputFolder) || !Directory.Exists(OptionValues.InputFolder))
                     {
-                        string message = $"Input path not valid: {(string.IsNullOrWhiteSpace(OptionValues.InputFolder) ? "NULL path" : OptionValues.InputFolder)}. Exiting";
+                        string message = $"Input path not valid: {(string.IsNullOrWhiteSpace(OptionValues.InputFolder) ? "NULL path" : OptionValues.InputFolder)}. Exiting!";
                         Logger.Log(Logger.LogType.Error, message);
+
                         throw new ApplicationException(message);
                     }
-                    Logger.Log(Logger.LogType.Info, "Input path valid");
 
+                    Logger.Log(Logger.LogType.Info, "Input path valid");
                     Logger.Log(Logger.LogType.Info, "Checking given output path...");
+
                     if (string.IsNullOrWhiteSpace(OptionValues.OutputFolder))
                     {
                         string message = "Output path not valid: NULL path. Exiting!";
                         Logger.Log(Logger.LogType.Error, message);
+
                         throw new ApplicationException(message);
                     }
 
@@ -174,11 +181,13 @@ namespace FolderCompressAndEncrypt
                     {
                         string message = $"Output path is not valid: {OptionValues.OutputFolder}. Exiting!";
                         Logger.Log(Logger.LogType.Error, message);
+
                         throw new ApplicationException(message);
                     }
-                    Logger.Log(Logger.LogType.Info, "Output path valid");
 
+                    Logger.Log(Logger.LogType.Info, "Output path valid");
                     Logger.Log(Logger.LogType.Info, "Checking temp path...");
+
                     try
                     {
                         string path = Path.GetFullPath(OptionValues.TempPath);
@@ -187,10 +196,11 @@ namespace FolderCompressAndEncrypt
                     {
                         string message = $"Temp path is not valid: {OptionValues.TempPath}. Exiting!";
                         Logger.Log(Logger.LogType.Error, message);
+
                         throw new ApplicationException(message);
                     }
-                    Logger.Log(Logger.LogType.Info, "Temp path valid");
 
+                    Logger.Log(Logger.LogType.Info, "Temp path valid");
                     Logger.Log(Logger.LogType.Info, "Argument validation complete: Settings:");
                     Logger.Log(Logger.LogType.Info, $"  - Operation mode: {(OptionValues.Decompressing ? "Decompress" : "Compress" + (OptionValues.EncryptFilenames ? " & Encrypt" : ""))}");
                     Logger.Log(Logger.LogType.Info, $"  - Input path: {OptionValues.InputFolder}");
@@ -209,7 +219,7 @@ namespace FolderCompressAndEncrypt
             catch (Exception e)
             {
                 if (Logger != null)
-                    Logger.Log(e, "Unable to start main operation - Check input parameters. Application will quit");
+                    Logger.Log(e, "Unable to start main operation - Check input parameters. Application will quit!");
 
                 Console.Error.WriteLine($"Oops! Something is not quite right, check your argument flags: {e.Message}");
                 return;

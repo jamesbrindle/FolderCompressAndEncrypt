@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace System
 {
+    /// <summary>
+    /// Language custom extension methods
+    /// </summary>
     internal static class Extensions
     {
         /// <summary>

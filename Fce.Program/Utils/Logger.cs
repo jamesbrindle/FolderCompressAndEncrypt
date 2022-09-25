@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 {
     /// <summary>
     /// Simple file logger
@@ -22,6 +22,11 @@ namespace FolderCompressAndEncrypt.Utils
 
         private string _hf = "*******";
 
+        /// <summary>
+        /// Simple file logger
+        /// </summary>
+        /// <param name="fileOrOutputDirectory">Full</param>
+        /// <param name="loggingEnabled"></param>
         internal Logger(string fileOrOutputDirectory, bool loggingEnabled)
         {
             string ext = Path.GetExtension(fileOrOutputDirectory);
@@ -30,16 +35,27 @@ namespace FolderCompressAndEncrypt.Utils
             {
                 OutputDirectory = fileOrOutputDirectory;
                 LogFilePath = Path.Combine(
-                    fileOrOutputDirectory, 
+                    OutputDirectory,
                     $"FCE-Log-{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}.log");
             }
             else
             {
                 OutputDirectory = Path.GetDirectoryName(fileOrOutputDirectory);
-                LogFilePath = Path.Combine(
-                    Path.GetDirectoryName(fileOrOutputDirectory), 
-                    $"{Path.GetFileNameWithoutExtension(fileOrOutputDirectory)}-" +
-                    $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}");
+                if (string.IsNullOrEmpty(OutputDirectory))
+                {
+                    OutputDirectory = Path.Combine(Path.GetTempPath(), "FCE-Temp", "Logs");
+                    LogFilePath = Path.Combine(
+                       OutputDirectory,
+                       $"{Path.GetFileNameWithoutExtension(fileOrOutputDirectory)}-" +
+                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}");
+                }
+                else
+                {
+                    LogFilePath = Path.Combine(
+                       Path.GetDirectoryName(fileOrOutputDirectory),
+                       $"{Path.GetFileNameWithoutExtension(fileOrOutputDirectory)}-" +
+                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}");
+                }
             }
 
             if (!Directory.Exists(OutputDirectory))

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 {
     /// <summary>
     /// Window directory helper methods

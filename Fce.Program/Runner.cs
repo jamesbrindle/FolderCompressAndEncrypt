@@ -1,4 +1,4 @@
-﻿using FolderCompressAndEncrypt.Utils;
+﻿using Fce.Utils;
 using SevenZip;
 using System;
 using System.Collections.Generic;
@@ -6,11 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace FolderCompressAndEncrypt
+namespace Fce
 {
+    /// <summary>
+    /// Main files processing - Performs failes gather, compression and extraction
+    /// </summary>
     internal class Runner
     {
         private static SevenZipCompressor _compressor = null;
+        private static SevenZipExtractor _extractor = null;
         private static List<string> _files = null;
 
         /// <summary>
@@ -30,7 +34,8 @@ namespace FolderCompressAndEncrypt
             }
             else
             {
-
+                SetExtractorOptions();
+                ExtractFiles();
             }
 
             CleanupTemporaryFiles(true);
@@ -49,7 +54,10 @@ namespace FolderCompressAndEncrypt
             SevenZipBase.SetLibraryPath(
                 EmbeddedResourceHelper.GetEmbeddedResourcePath(
                         TargetAssemblyType.Executing,
-                        "7z.dll", "Embed"));
+                        Environment.Is64BitProcess 
+                            ? "7z_x64.dll"
+                            : "7z_x86.dll", 
+                        "Embed"));
 
             _compressor = new SevenZipCompressor(Program.OptionValues.TempPath);
             _compressor.EncryptHeaders = true;
@@ -83,8 +91,8 @@ namespace FolderCompressAndEncrypt
             Program.Logger.Log(Logger.LogType.Info, $"  - Encrypt headers: {true}");
             Program.Logger.Log(Logger.LogType.Info, $"  - Encrypt directory and filenames: {Program.OptionValues.EncryptFilenames}");
             Program.Logger.Log(Logger.LogType.Info, $"  - Temporary path: {Program.OptionValues.TempPath}");
-
             Program.Logger.Log(Logger.LogType.Info, "Setting compression options complete");
+
             Program.Logger.Space();
         }
 
@@ -94,7 +102,6 @@ namespace FolderCompressAndEncrypt
         private static void CompressFilesList()
         {
             ConsoleEx.WriteColouredLine("Compressing...", ConsoleColor.Yellow);
-
             Program.Logger.Log(Logger.LogType.Header, "Folder Scan Started");
             Program.Logger.Log(Logger.LogType.Info, "Gathering list of files to compress...");
 
@@ -110,47 +117,52 @@ namespace FolderCompressAndEncrypt
                 Program.Logger.Log(Logger.LogType.Header, $"Compress and / or Encrypt Processing Started");
             }
             else
-                Program.Logger.Log(Logger.LogType.Info, $"No files found...");
+            {
+                ConsoleEx.WriteColouredLine("No files found to compress", ConsoleColor.Green);
+                Program.Logger.Log(Logger.LogType.Info, $"No files found");
+            }
 
             foreach (var file in _files)
             {
                 ConsoleEx.WriteColoured($"\n[{_files.IndexOf(file) + 1} of {_files.Count}]", ConsoleColor.Cyan);
                 ConsoleEx.WriteColoured($" {Path.GetFileName(file)}", ConsoleColor.White);
-
                 Program.Logger.Log(Logger.LogType.Info, $"({_files.IndexOf(file) + 1} of {_files.Count}) {Path.GetFileName(file)}");
 
                 try
                 {
-                    string outputDirectory = string.Empty;
-                    string tailDirectory = Path.GetDirectoryName(new DirectoryInfo(Program.OptionValues.InputFolder).Parent == null
-                                ? new DriveInfo(Program.OptionValues.InputFolder).Name.TrimEnd('\\').TrimEnd(':') + "\\" +
-                                    file.Replace(new DirectoryInfo(Program.OptionValues.InputFolder).FullName, "").TrimStart('\\')
-                                : file.Replace(new DirectoryInfo(Program.OptionValues.InputFolder).Parent.FullName, "").TrimStart('\\'));
+                    string tailDirectory =
+                        Path.GetDirectoryName(new DirectoryInfo(Program.OptionValues.InputFolder).Parent == null
 
-                    var tailPathDirs = tailDirectory.Split(Path.DirectorySeparatorChar);
+                            ? new DriveInfo(Program.OptionValues.InputFolder).Name.TrimEnd('\\').TrimEnd(':') + "\\" +
+                                file.Replace(new DirectoryInfo(Program.OptionValues.InputFolder).FullName, "").TrimStart('\\')
 
-                    string tailPathStart = tailPathDirs[0];
-                    string tailPathEnd = string.Empty;
+                            : file.Replace(new DirectoryInfo(Program.OptionValues.InputFolder).Parent.FullName, "").TrimStart('\\'));
 
-                    // Avoid recompressing what we've already compressed if the input path contains the output path in its directory a subdirectory
-                    if (tailPathDirs.Length > 1)
+                    var tailDirSplit = tailDirectory.Split(Path.DirectorySeparatorChar);
+                    string tailOutputDirectory = tailDirSplit[0];
+                    string headInputDirectory = string.Empty;
+
+                    if (tailDirSplit.Length > 1)
                     {
+                        // Avoid recompressing what we've already compressed if the input path contains the output path in its directory a subdirectory
+
                         if (Program.OptionValues.EncryptFilenames)
                         {
                             try
                             {
-                                tailPathEnd = StringEncrypt.Decrypt(tailPathDirs[tailPathDirs.Length - 1]);
+                                headInputDirectory = StringEncrypt.Decrypt(tailDirSplit[1]);
                             }
                             catch
                             {
-                                tailPathEnd = tailPathDirs[tailPathDirs.Length - 1];
+                                headInputDirectory = tailDirSplit[1];
                             }
                         }
                         else
-                            tailPathEnd = tailPathDirs[tailPathDirs.Length - 1];
+                            headInputDirectory = tailDirSplit[1];
                     }
 
-                    if (!(tailPathDirs.Length > 1 || tailPathStart == tailPathEnd))
+                    string outputDirectory = string.Empty;
+                    if (!(tailDirSplit.Length > 1 && tailOutputDirectory == headInputDirectory))
                     {
                         if (Program.OptionValues.EncryptFilenames)
                         {
@@ -207,6 +219,9 @@ namespace FolderCompressAndEncrypt
                 }
             }
 
+            if (_files != null && _files.Count > 0)
+                Console.WriteLine();
+
             Program.Logger.Space();
         }
 
@@ -223,21 +238,15 @@ namespace FolderCompressAndEncrypt
                 _compressor.CompressFiles(outputFile, inputFile);
         }
 
-        private void DecompressFiles()
-        {
-
-        }
-
         /// <summary>
         /// For source file deletion monitoring (a sort of 'sync') - delete the remaining archive if the original source file not present
         /// </summary>
         private static void DeleteArchivesWithoutSource()
         {
             Program.Logger.Log(Logger.LogType.Header, "Output Folder Cleanup Started");
-
-            ConsoleEx.WriteColouredLine("\n\nDeleting archives where there is no longer a source file...", ConsoleColor.Yellow);
-
+            ConsoleEx.WriteColouredLine("\nDeleting archives where there is no longer a source file...", ConsoleColor.Yellow);
             Program.Logger.Log(Logger.LogType.Info, "Gathering list of files to delete...");
+
             var filesListInOutputFolder = DirectoryHelper.GetAllFilesTraversive(Program.OptionValues.OutputFolder, true);
             var archiveList = new List<string>();
 
@@ -327,7 +336,7 @@ namespace FolderCompressAndEncrypt
                     {
                         try
                         {
-                            Directory.Delete(directory);
+                            Directory.Delete(directory, true);
                         }
                         catch { }
                     }
@@ -338,15 +347,118 @@ namespace FolderCompressAndEncrypt
         }
 
         /// <summary>
+        /// Sub-method to Setup 7z extraction object with options
+        /// </summary>
+        private static void SetExtractorOptions()
+        {
+            Program.Logger.Log(Logger.LogType.Header, "Setting Decompression Options");
+
+            SevenZipBase.SetLibraryPath(
+                EmbeddedResourceHelper.GetEmbeddedResourcePath(
+                        TargetAssemblyType.Executing,
+                        Environment.Is64BitProcess
+                            ? "7z_x64.dll"
+                            : "7z_x86.dll",
+                        "Embed"));
+
+            Program.Logger.Log(Logger.LogType.Info, $"  - Encrypted directory and filenames: {Program.OptionValues.EncryptFilenames}");
+            Program.Logger.Log(Logger.LogType.Info, $"  - Password protected: {!string.IsNullOrEmpty(Program.OptionValues.Password)}");
+            Program.Logger.Log(Logger.LogType.Info, "Setting decompression options complete");
+
+            Program.Logger.Space();
+        }
+
+        /// <summary>
+        /// Extract compressed / encrypted files from source. Will create and restore the folder structure including unencrypting (unmasking) directory
+        /// and file names
+        /// </summary>
+        private static void ExtractFiles()
+        {
+            ConsoleEx.WriteColoured("Decompressing...\n", ConsoleColor.Yellow);
+
+            try
+            {
+                Program.Logger.Log(Logger.LogType.Header, "Folder Scan Started");
+                Program.Logger.Log(Logger.LogType.Info, "Gathering list of files for extraction...");
+
+                var files = DirectoryHelper.GetAllFilesTraversive(Program.OptionValues.InputFolder)
+                                           .Where(m => m.EndsWith(".7z", StringComparison.OrdinalIgnoreCase))
+                                           .ToList();
+
+                if (files != null && files.Count > 0)
+                {
+                    Program.Logger.Log(Logger.LogType.Info, $"Found {files.Count} files(s)...");
+                    Program.Logger.Space();
+                    Program.Logger.Log(Logger.LogType.Header, "Compress and / or Decrypt Processing Started");
+
+                    foreach (var file in files)
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(Program.OptionValues.Password))
+                                _extractor = new SevenZipExtractor(file, Program.OptionValues.Password);
+                            else
+                                _extractor = new SevenZipExtractor(file);
+
+                            string tailDirectory = Path.GetDirectoryName(file).Replace(Program.OptionValues.OutputFolder, "").TrimStart('\\');
+                            string[] tailDirSplit = tailDirectory.Split(Path.DirectorySeparatorChar);
+                            string unencryptedDirectory = string.Empty;
+
+                            foreach (string dir in tailDirSplit)
+                            {
+                                if (dir.StartsWith("Š"))
+                                    unencryptedDirectory += StringEncrypt.Decrypt(dir) + "\\";
+                                else
+                                    unencryptedDirectory += dir + "\\";
+                            }
+
+                            string outputDirectory = Path.Combine(Program.OptionValues.OutputFolder, unencryptedDirectory);
+                            string potentiallyEncryptedFilename = Path.GetFileNameWithoutExtension(file);
+
+                            string unencryptedFilename = potentiallyEncryptedFilename.StartsWith("Š")
+                                ? StringEncrypt.Decrypt(potentiallyEncryptedFilename)
+                                : potentiallyEncryptedFilename;
+
+                            ConsoleEx.WriteColoured($"\n[{files.IndexOf(file) + 1} of {files.Count}]", ConsoleColor.Cyan);
+                            ConsoleEx.WriteColoured($" {unencryptedFilename}", ConsoleColor.White);
+                            Program.Logger.Log(Logger.LogType.Info, $"({files.IndexOf(file) + 1} of {files.Count}) {unencryptedFilename}");
+
+                            if (!Directory.Exists(outputDirectory))
+                                Directory.CreateDirectory(outputDirectory);
+
+                            _extractor.ExtractArchive(outputDirectory);
+                        }
+                        catch (Exception e)
+                        {
+                            Program.Logger.Log(Logger.LogType.Warning, $"  - Unable to extract file: {e.Message}");
+                            ConsoleEx.WriteColoured($" Extraction failed: {e.Message}", ConsoleColor.Red);
+                        }
+                    }
+
+                    Program.Logger.Space();
+                }
+                else
+                {
+                    Program.Logger.Log(Logger.LogType.Info, "None found");
+                    ConsoleEx.WriteColoured("No files found to extract", ConsoleColor.Green);
+                }
+            }
+            catch (Exception e)
+            {
+                Program.Logger.Log(e, $"Error gathering list of file for extraction: {e.Message}");
+            }
+
+            DeleteEmptyFoldersFromOutputPath();
+        }
+
+        /// <summary>
         /// Delete any temporary files created by this utility and 7z
         /// </summary>
         /// <param name="last">Cleanup order (just displays a different message)</param>
         private static void CleanupTemporaryFiles(bool last)
         {
-            Program.Logger.Log(Logger.LogType.Info, $"{(last ? "Re-" : "")}Cleaning up any temporary files...");
-
-            ConsoleEx.WriteColouredLine($"{(last ? "\n\nRe-" : "")}Cleaning up any temporary files... ", ConsoleColor.Yellow);
-            ConsoleSpinner.Show();
+            Program.Logger.Log(Logger.LogType.Info, $"Cleaning up any temporary files...");
+            ConsoleEx.WriteColouredLine($"{(last ? "\n\n" : "")}Cleaning up any temporary files... ", ConsoleColor.Yellow);
 
             if (Directory.Exists(Program.OptionValues.TempPath))
             {
@@ -369,9 +481,7 @@ namespace FolderCompressAndEncrypt
             else
                 Directory.CreateDirectory(Program.OptionValues.TempPath);
 
-            ConsoleSpinner.Hide();
             Console.WriteLine();
-
             Program.Logger.Log(Logger.LogType.Info, "Temporary files clean complete");
             Program.Logger.Space();
         }

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace FolderCompressAndEncrypt.Utils
+namespace Fce.Utils
 {
     public enum TargetAssemblyType
     {

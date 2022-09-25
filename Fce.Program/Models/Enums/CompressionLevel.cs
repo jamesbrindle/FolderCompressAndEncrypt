@@ -1,4 +1,4 @@
-﻿namespace FolderCompressAndEncrypt.Models.Enums
+﻿namespace Fce.Models.Enums
 {
     /// <summary>
     /// Compression level of resulting archive. None / lower will take less time but result in largeer file sizes, 

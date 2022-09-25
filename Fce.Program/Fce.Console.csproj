@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0625A802-89B9-46EA-91B7-0277F7C15908}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>FolderCompressAndEncrypt</RootNamespace>
-    <AssemblyName>fce</AssemblyName>
+    <RootNamespace>Fce</RootNamespace>
+    <AssemblyName>Fce</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -57,6 +57,26 @@
   <PropertyGroup>
     <ApplicationIcon>FolderCompressAndEncrypt.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SevenZipSharp, Version=0.64.8300.42929, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -103,15 +123,15 @@
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\Options.cs" />
-    <Compile Include="Utils\Spinner.cs" />
     <Compile Include="Utils\StringEncrypt.cs" />
     <Compile Include="Utils\StringLengthEncode.cs" />
     <Compile Include="Utils\ConsoleEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="Embed\7z.zip" />
     <EmbeddedResource Include="Embed\SevenZipSharp.zip" />
+    <EmbeddedResource Include="Embed\7z_x64.zip" />
+    <EmbeddedResource Include="Embed\7z_x86.zip" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
