@@ -160,6 +160,7 @@ namespace Fce
                 else if (OptionValues.ShowVersion)
                 {
                     Console.WriteLine($"Folder Compress And Encrypt Utility: Version: {GetVersion()}, By {"James Brindle"}");
+                    return;
                 }
                 else
                 {
