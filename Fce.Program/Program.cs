@@ -23,8 +23,8 @@ namespace Fce
 #if DEBUG
             // Compress
             args = new string[] {
-                "-i", @"c:\temp",
-                "-o", @"c:\temp",
+                "-i", @"C:\Temp",
+                "-o", @"C:\Temp",
                 "-m", "none",
                 "-r",
                 "-l", // default log path
@@ -34,16 +34,16 @@ namespace Fce
                 "--enable-long-paths" };
 
             // Extract
-            //args = new string[] {
-            //    "-i", @"c:\temp",
-            //    "-o", @"c:\temp",
-            //    "-m", "none",
-            //    "-r",
-            //    "-d",
-            //    "-l", // default log path
-            //    "-e",
-            //    "-c",
-            //    "-p", "SomePassword" };
+            args = new string[] {
+                "-i", @"C:\Temp",
+                "-o", @"C:\Temp",
+                "-r",
+                "-d",
+                "-l", // default log path
+                "-e",
+                "-c",
+                "-p", "SomePassword",
+                "--enable-long-paths"};
 
             // Help
             //args = new string[] {

@@ -405,7 +405,7 @@ namespace Fce
                             else
                                 _extractor = new SevenZipExtractor(file);
 
-                            string tailDirectory = Path.GetDirectoryName(file).Replace(Program.OptionValues.OutputFolder, "").TrimStart('\\');
+                            string tailDirectory = Path.GetDirectoryName(file).Replace(Program.OptionValues.InputFolder, "").TrimStart('\\');
                             string[] tailDirSplit = tailDirectory.Split(Path.DirectorySeparatorChar);
                             string unencryptedDirectory = string.Empty;
 
