@@ -20,18 +20,18 @@ namespace Fce
 
         private static void Main(string[] args)
         {
-
 #if DEBUG
             // Compress
-            //args = new string[] {
-            //    "-i", @"c:\temp",
-            //    "-o", @"c:\temp",
-            //    "-m", "none",
-            //    "-r",
-            //    "-l", // default log path
-            //    "-e",
-            //    "-c",                
-            //    "-p", "SomePassword" };
+            args = new string[] {
+                "-i", @"c:\temp",
+                "-o", @"c:\temp",
+                "-m", "none",
+                "-r",
+                "-l", // default log path
+                "-e",
+                "-c",
+                "-p", "SomePassword",
+                "--enable-long-paths" };
 
             // Extract
             //args = new string[] {
@@ -45,11 +45,14 @@ namespace Fce
             //    "-c",
             //    "-p", "SomePassword" };
 
-           // Help
-           args = new string[] {
-                "-h" };
-#endif
+            // Help
+            //args = new string[] {
+            //     "-h" };
 
+            // Enable windows long path support in registry
+            //args = new string[] {
+            //    "--enable-long-paths" };
+#endif
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
 
             ConsoleEx.WriteColouredLine("-----------------------------------------", ConsoleColor.Cyan);
@@ -58,7 +61,7 @@ namespace Fce
 
             if (args == null || args.Length == 0)
             {
-                ConsoleEx.WriteColouredLine("Command line arguments expected! Use fla -h for options.\n", ConsoleColor.Yellow);
+                ConsoleEx.WriteColouredLine("Command line arguments expected! Use fce -h for options.\n", ConsoleColor.Yellow);
                 return;
             }
 
@@ -97,7 +100,7 @@ namespace Fce
                   OptionValues.Password.Description<OptionValues>("Password"),
                   (v) => OptionValues.Password = v },
 
-                { "f|overwrite",
+                { "f|force|overwrite",
                   OptionValues.ForceOverwrite.Description<OptionValues>("ForceOverwrite"),
                   (v) => OptionValues.ForceOverwrite = v != null },
 
@@ -110,6 +113,10 @@ namespace Fce
                 { "c|clean",
                   OptionValues.Clean.Description<OptionValues>("Clean"),
                   (v) => OptionValues.Clean = v != null },
+
+                { "enable-long-paths",
+                  OptionValues.Clean.Description<OptionValues>("EnableWindowsLongPathSupport"),
+                  (v) => OptionValues.EnableWindowsLongPathSupport = v != null },
 
                 { "v|version",
                   OptionValues.ShowVersion.Description<OptionValues>("ShowVersion"),
@@ -139,10 +146,10 @@ namespace Fce
                     Console.WriteLine();
                     ConsoleEx.EndParagraph();
                     ConsoleEx.WordWrap("The intention of this application is for secure backups, so you can run again and again on the same input folder and output folder and only " +
-                                        "the changes will written, however, you can use options '-f' and '-n' to alter this behaviour.");
+                                       "the changes will written, however, you can use options '-f' and '-n' to alter this behaviour.");
                     ConsoleEx.EndParagraph();
                     Console.WriteLine();
-                    ConsoleEx.WordWrap("Remember to wrap paths that contains spaces with double quotes, i.e: \"c:\\Some Path\\Some Subpath\".");
+                    ConsoleEx.WordWrap("Remember to wrap paths that contains spaces with double quotes, i.e: \"C:\\Some Path\\Some Subpath\".");
                     ConsoleEx.EndParagraph();
                     Console.WriteLine();
                     ConsoleEx.WriteColouredLine("The available options / arguments are as follows:\n", ConsoleColor.Yellow);
@@ -160,8 +167,37 @@ namespace Fce
 
                     Logger = new Logger(OptionValues.LogPath, OptionValues.LoggingEnabled);
                     Logger.Log(Logger.LogType.Header, "Arguments Validation Started");
-                    Logger.Log(Logger.LogType.Info, "Checking given input path...");
 
+                    if (OptionValues.EnableWindowsLongPathSupport)
+                    {
+                        Logger.Log(Logger.LogType.Info, "Enable long path support requested, check if process elevated...");
+                        ConsoleEx.WriteColouredLine("Enabling Windows long path support...", ConsoleColor.Yellow);
+
+                        if (!UacHelper.IsProcessElevated())
+                        {
+                            Logger.Log(Logger.LogType.Warning, "Process not elevated - Skipping");
+                            ConsoleEx.WriteColouredLine("Process not elevated - Skipping\n", ConsoleColor.Red);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                RegistryHelper.EnableLongPathSupport();
+                                Logger.Log(Logger.LogType.Info, "Successfully enabled long path support");
+                                ConsoleEx.WriteColouredLine("Success\n", ConsoleColor.Green);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Log(Logger.LogType.Warning, $"Error trying to set registry for long path support - Skipping: {e.Message}");
+                                ConsoleEx.WriteColouredLine($"Error trying to set registry for long path support: {e.Message}\n", ConsoleColor.Red);
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(OptionValues.InputFolder) && string.IsNullOrEmpty(OptionValues.OutputFolder))
+                            return;
+                    }
+
+                    Logger.Log(Logger.LogType.Info, "Checking given input path...");
                     if (string.IsNullOrWhiteSpace(OptionValues.InputFolder) || !Directory.Exists(OptionValues.InputFolder.LongPathSafe()))
                     {
                         string message = $"Input path not valid: {(string.IsNullOrWhiteSpace(OptionValues.InputFolder) ? "NULL path" : OptionValues.InputFolder)}. Exiting!";
@@ -169,10 +205,9 @@ namespace Fce
 
                         throw new ApplicationException(message);
                     }
-
                     Logger.Log(Logger.LogType.Info, "Input path valid");
-                    Logger.Log(Logger.LogType.Info, "Checking given output path...");
 
+                    Logger.Log(Logger.LogType.Info, "Checking given output path...");
                     if (string.IsNullOrWhiteSpace(OptionValues.OutputFolder))
                     {
                         string message = "Output path not valid: NULL path. Exiting!";
@@ -192,10 +227,9 @@ namespace Fce
 
                         throw new ApplicationException(message);
                     }
-
                     Logger.Log(Logger.LogType.Info, "Output path valid");
-                    Logger.Log(Logger.LogType.Info, "Checking temp path...");
 
+                    Logger.Log(Logger.LogType.Info, "Checking temp path...");
                     try
                     {
                         string path = Path.GetFullPath(OptionValues.TempPath);
@@ -207,8 +241,8 @@ namespace Fce
 
                         throw new ApplicationException(message);
                     }
-
                     Logger.Log(Logger.LogType.Info, "Temp path valid");
+
                     Logger.Log(Logger.LogType.Info, "Argument validation complete: Settings:");
                     Logger.Log(Logger.LogType.Info, $"  - Operation mode: {(OptionValues.Decompressing ? "Decompress" : "Compress" + (OptionValues.EncryptFilenames ? " & Encrypt" : ""))}");
                     Logger.Log(Logger.LogType.Info, $"  - Input path: {OptionValues.InputFolder}");

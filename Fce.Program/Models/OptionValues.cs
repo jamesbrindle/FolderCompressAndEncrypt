@@ -110,5 +110,15 @@ namespace Fce.Models
         /// </summary>
         [Description("Shows the version number.")]
         public bool ShowVersion { get; set; } = false;
+
+        /// <summary>
+        /// (REQUIRES ELEVATED PERMISSION - 'Run As Admin') - Set the Windows registry to enable long path support as typically it's 
+        /// limited to 260 characters. If elevated process not detected it will be skipped. This flag can be used on its own or 
+        /// together with a compress /extract operation.
+        /// </summary>
+        [Description("Requires elevated permissions (Run as Admin) - Sets the Windows registry to enable long path support as typically it's " + 
+                     "limited to 260 characters. If elevated process not detected it will be skipped. This flag can be used on its own or " +
+                     "together with a compress /extract operation.")]
+        public bool EnableWindowsLongPathSupport { get; set; } = false;
     }
 }
