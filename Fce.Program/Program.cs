@@ -61,6 +61,9 @@ namespace Fce
              * DEBUG END
             */
 
+            if (args == null || args.Length == 0)
+                ConsoleEx.WriteColouredLine("Command line arguments expected! Use fla -h for options.", ConsoleColor.Yellow);
+
             try
             {
                 var p = new OptionSet {
@@ -255,7 +258,7 @@ namespace Fce
             if (args.Name.Contains("SevenZipSharp"))
                 return Assembly.LoadFile(
                     EmbeddedResourceHelper.GetEmbeddedResourcePath(
-                        TargetAssemblyType.Executing, 
+                        TargetAssemblyType.Executing,
                         "SevenZipSharp.dll", "Embed"));
             else
                 return null;
