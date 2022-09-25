@@ -89,7 +89,7 @@ namespace Fce.Utils
         /// <returns>Original string (before length encode)</returns>
         private static string ReplaceStringWithStartAndEndEncoding(string inputString)
         {
-            inputString = ReplaceStringWithStartAndEndEncoding(inputString, "~");
+            inputString = ReplaceStringWithStartAndEndEncoding(inputString, "ɛ");
             inputString = ReplaceStringWithStartAndEndEncoding(inputString, "Ʉ");
             inputString = ReplaceStringWithStartAndEndEncoding(inputString, "ã");
             inputString = ReplaceStringWithStartAndEndEncoding(inputString, "ƒ");
@@ -121,7 +121,7 @@ namespace Fce.Utils
             inputString = ReplaceStringWithStartAndEndEncoding(inputString, "Ý");
 
             if (inputString.StringContainsIn(
-                "~", "Ʉ", "ã", "ƒ", "µ", "á", "ÿ", "ü", "Ó", "Ã", "Þ", "¤", "»", "§", "é",
+                "ɛ", "Ʉ", "ã", "ƒ", "µ", "á", "ÿ", "ü", "Ó", "Ã", "Þ", "¤", "»", "§", "é",
                 "ë", "å", "ì", "Ú", "Ï", "Å", "¦", "Ñ", "†", "ˆ", "ï", "ȑ", "Â", "Ò", "Ý"))
             {
                 return ReplaceStringWithStartAndEndEncoding(inputString);
@@ -168,7 +168,7 @@ namespace Fce.Utils
         {
             switch (number)
             {
-                case 1: return "~";
+                case 1: return "ɛ";
                 case 2: return "Ʉ";
                 case 3: return "ã";
                 case 4: return "ƒ";
@@ -213,7 +213,7 @@ namespace Fce.Utils
         {
             switch (symbol)
             {
-                case "~": return 1;
+                case "ɛ": return 1;
                 case "Ʉ": return 2;
                 case "ã": return 3;
                 case "ƒ": return 4;

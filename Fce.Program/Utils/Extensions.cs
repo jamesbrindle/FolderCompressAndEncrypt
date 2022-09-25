@@ -47,5 +47,25 @@ namespace System
 
             return false;
         }
+
+        /// <summary>
+        /// Appends \\?\ to the path if it doesn't already exist) for better long path management if long paths are enabled in windows
+        /// </summary>
+        /// <param name="path">Original file or directory path</param>
+        /// <returns>Safe formatted long path</returns>
+        internal static string LongPathSafe(this string path)
+        {
+            return @"\\?\" + path.Replace(@"\\?\", "");
+        }
+
+        /// <summary>
+        /// Removes \\?\ to the path if it exists)  - For methods that don't accept it
+        /// </summary>
+        /// <param name="path">Original file or directory path</param>
+        /// <returns>Normal path format</returns>
+        internal static string NormalPath(this string path)
+        {
+            return path.Replace(@"\\?\", "");
+        }
     }
 }

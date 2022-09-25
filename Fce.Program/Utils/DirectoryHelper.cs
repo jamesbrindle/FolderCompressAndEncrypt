@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace Fce.Utils
 {
@@ -15,8 +16,12 @@ namespace Fce.Utils
         /// <returns>List of directories (string)</string></returns>
         public static List<string> GetAllDirectoriesTraversive(this string targetDirectory, bool ignoreSystem = true)
         {
+            targetDirectory = targetDirectory.LongPathSafe();
             List<string> directories = new List<string>();
             TraverseDirectories(targetDirectory, directories, ignoreSystem);
+
+            for (int i = 0; i < directories.Count; i++)
+                directories[i] = directories[i].NormalPath();
 
             return directories;
         }
@@ -28,6 +33,8 @@ namespace Fce.Utils
         /// <returns>List of files (string)</string></returns>
         public static List<string> GetAllFilesTraversive(string targetDirectory, bool ignoreSystem = true)
         {
+            targetDirectory = targetDirectory.LongPathSafe();
+
             List<string> directories = new List<string>();
             List<string> files = new List<string>();
 
@@ -86,6 +93,9 @@ namespace Fce.Utils
                 catch { }
             }
 
+            for (int i = 0; i < files.Count; i++)
+                files[i] = files[i].NormalPath();
+
             return files;
         }
 
@@ -96,6 +106,8 @@ namespace Fce.Utils
         /// <returns>List of FileInfo objects</string></returns>
         public static List<FileInfo> GetAllFileInfoTraversive(string targetDirectory, bool ignoreSystem = true)
         {
+            targetDirectory = targetDirectory.LongPathSafe();
+
             List<string> directories = new List<string>();
             List<FileInfo> files = new List<FileInfo>();
             TraverseDirectories(targetDirectory, directories, ignoreSystem);
@@ -147,6 +159,9 @@ namespace Fce.Utils
                 catch { }
             }
 
+            for (int i = 0; i < files.Count; i++)
+                files[i] = new FileInfo(files[i].FullName.NormalPath());
+
             return files;
         }
 
@@ -193,6 +208,7 @@ namespace Fce.Utils
         /// <returns>True is locked, false otherwise</returns>
         public static bool IsFileLocked(string path)
         {
+            path = path.LongPathSafe();
             // it must exist for it to be locked
             if (File.Exists(path))
             {

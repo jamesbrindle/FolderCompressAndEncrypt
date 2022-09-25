@@ -33,28 +33,28 @@ namespace Fce.Utils
 
             if (string.IsNullOrWhiteSpace(ext))
             {
-                OutputDirectory = fileOrOutputDirectory;
+                OutputDirectory = fileOrOutputDirectory.LongPathSafe();
                 LogFilePath = Path.Combine(
                     OutputDirectory,
-                    $"FCE-Log-{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}.log");
+                    $"FCE-Log-{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}.log").LongPathSafe();
             }
             else
             {
-                OutputDirectory = Path.GetDirectoryName(fileOrOutputDirectory);
+                OutputDirectory = Path.GetDirectoryName(fileOrOutputDirectory).LongPathSafe();
                 if (string.IsNullOrEmpty(OutputDirectory))
                 {
-                    OutputDirectory = Path.Combine(Path.GetTempPath(), "FCE-Temp", "Logs");
+                    OutputDirectory = Path.Combine(Path.GetTempPath(), "FCE-Temp", "Logs").LongPathSafe();
                     LogFilePath = Path.Combine(
                        OutputDirectory,
                        $"{Path.GetFileNameWithoutExtension(fileOrOutputDirectory)}-" +
-                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}");
+                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}").LongPathSafe();
                 }
                 else
                 {
                     LogFilePath = Path.Combine(
                        Path.GetDirectoryName(fileOrOutputDirectory),
                        $"{Path.GetFileNameWithoutExtension(fileOrOutputDirectory)}-" +
-                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}");
+                       $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ff")}{ext}").LongPathSafe();
                 }
             }
 

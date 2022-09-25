@@ -20,6 +20,36 @@ namespace Fce
 
         private static void Main(string[] args)
         {
+
+#if DEBUG
+            // Compress
+            args = new string[] {
+                "-i", @"c:\temp",
+                "-o", @"c:\temp",
+                "-m", "none",
+                "-r",
+                "-l", // default log path
+                "-e",
+                "-c",                
+                "-p", "SomePassword" };
+
+            // Extract
+            //args = new string[] {
+            //    "-i", @"c:\temp",
+            //    "-o", @"c:\temp",
+            //    "-m", "none",
+            //    "-r",
+            //    "-d",
+            //    "-l", // default log path
+            //    "-e",
+            //    "-c",
+            //    "-p", "SomePassword" };
+
+            // Help
+            //args = new string[] {
+            //    "-h" };
+#endif
+
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
 
             ConsoleEx.WriteColouredLine("-----------------------------------------", ConsoleColor.Cyan);
@@ -125,7 +155,7 @@ namespace Fce
                     Logger.Log(Logger.LogType.Header, "Arguments Validation Started");
                     Logger.Log(Logger.LogType.Info, "Checking given input path...");
 
-                    if (string.IsNullOrWhiteSpace(OptionValues.InputFolder) || !Directory.Exists(OptionValues.InputFolder))
+                    if (string.IsNullOrWhiteSpace(OptionValues.InputFolder) || !Directory.Exists(OptionValues.InputFolder.LongPathSafe()))
                     {
                         string message = $"Input path not valid: {(string.IsNullOrWhiteSpace(OptionValues.InputFolder) ? "NULL path" : OptionValues.InputFolder)}. Exiting!";
                         Logger.Log(Logger.LogType.Error, message);

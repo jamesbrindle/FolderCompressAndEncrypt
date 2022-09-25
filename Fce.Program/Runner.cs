@@ -54,14 +54,14 @@ namespace Fce
             SevenZipBase.SetLibraryPath(
                 EmbeddedResourceHelper.GetEmbeddedResourcePath(
                         TargetAssemblyType.Executing,
-                        Environment.Is64BitProcess 
+                        Environment.Is64BitProcess
                             ? "7z_x64.dll"
-                            : "7z_x86.dll", 
+                            : "7z_x86.dll",
                         "Embed"));
 
             _compressor = new SevenZipCompressor(Program.OptionValues.TempPath);
             _compressor.EncryptHeaders = true;
-            _compressor.ZipEncryptionMethod = ZipEncryptionMethod.Aes128;            
+            _compressor.ZipEncryptionMethod = ZipEncryptionMethod.Aes128;
             _compressor.CompressionLevel = (CompressionLevel)Enum.Parse(typeof(CompressionLevel), Program.OptionValues.CompressionLevel.ToString());
 
             switch (Program.OptionValues.CompressionLevel)
@@ -108,7 +108,11 @@ namespace Fce
             if (Program.OptionValues.Recursive)
                 _files = DirectoryHelper.GetAllFilesTraversive(Program.OptionValues.InputFolder, true);
             else
-                _files = Directory.GetFiles(Program.OptionValues.InputFolder, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            {
+                _files = Directory.GetFiles(Program.OptionValues.InputFolder.LongPathSafe(), "*.*", SearchOption.TopDirectoryOnly).ToList();
+                for (int i = 0; i < _files.Count; i++)
+                    _files[i] = _files[i].NormalPath();
+            }
 
             if (_files != null && _files.Count > 0)
             {
@@ -178,8 +182,8 @@ namespace Fce
                             outputDirectory = Path.Combine(Program.OptionValues.OutputFolder, tailDirectory);
                         }
 
-                        if (!Directory.Exists(outputDirectory))
-                            Directory.CreateDirectory(outputDirectory);
+                        if (!Directory.Exists(outputDirectory.LongPathSafe()))
+                            Directory.CreateDirectory(outputDirectory.LongPathSafe());
 
                         string outputFilename;
                         if (Program.OptionValues.EncryptFilenames)
@@ -187,12 +191,12 @@ namespace Fce
                         else
                             outputFilename = $"{Path.GetFileName(file)}.7z";
 
-                        if (File.Exists(Path.Combine(outputDirectory, outputFilename)))
+                        if (File.Exists(Path.Combine(outputDirectory, outputFilename).LongPathSafe()))
                         {
                             if (Program.OptionValues.ForceOverwrite)
                             {
                                 Program.Logger.Log(Logger.LogType.Info, "  - Already exists at destination but force overwrite enabled. Continuing...");
-                                File.Delete(Path.Combine(outputDirectory, outputFilename));
+                                File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
                                 CompressFile(file, Path.Combine(outputDirectory, outputFilename));
                             }
                             else
@@ -233,9 +237,9 @@ namespace Fce
         private static void CompressFile(string inputFile, string outputFile)
         {
             if (!string.IsNullOrEmpty(Program.OptionValues.Password))
-                _compressor.CompressFilesEncrypted(outputFile, Program.OptionValues.Password, inputFile);
+                _compressor.CompressFilesEncrypted(outputFile.LongPathSafe(), Program.OptionValues.Password, inputFile.NormalPath());
             else
-                _compressor.CompressFiles(outputFile, inputFile);
+                _compressor.CompressFiles(outputFile.LongPathSafe(), inputFile.NormalPath());
         }
 
         /// <summary>
@@ -286,7 +290,7 @@ namespace Fce
                         Path.GetFileNameWithoutExtension(archiveFile));
                 }
 
-                if (!File.Exists(sourceFileName))
+                if (!File.Exists(sourceFileName.LongPathSafe()))
                 {
                     found = true;
 
@@ -295,7 +299,7 @@ namespace Fce
                         Program.Logger.Log(Logger.LogType.Info, $"Deleting file: {Path.GetFileName(archiveFile)}");
                         ConsoleEx.WriteColouredLine($"Deleting file: {Path.GetFileName(archiveFile)} ({Path.GetFileName(sourceFileName)})", ConsoleColor.White);
 
-                        File.Delete(archiveFile);
+                        File.Delete(archiveFile.LongPathSafe());
                     }
                     catch (Exception e)
                     {
@@ -336,7 +340,8 @@ namespace Fce
                     {
                         try
                         {
-                            Directory.Delete(directory, true);
+                            if (directory != Program.OptionValues.OutputFolder) // don't delete original
+                                Directory.Delete(directory.LongPathSafe(), true);
                         }
                         catch { }
                     }
@@ -423,8 +428,8 @@ namespace Fce
                             ConsoleEx.WriteColoured($" {unencryptedFilename}", ConsoleColor.White);
                             Program.Logger.Log(Logger.LogType.Info, $"({files.IndexOf(file) + 1} of {files.Count}) {unencryptedFilename}");
 
-                            if (!Directory.Exists(outputDirectory))
-                                Directory.CreateDirectory(outputDirectory);
+                            if (!Directory.Exists(outputDirectory.LongPathSafe()))
+                                Directory.CreateDirectory(outputDirectory.LongPathSafe());
 
                             _extractor.ExtractArchive(outputDirectory);
                         }
@@ -460,14 +465,14 @@ namespace Fce
             Program.Logger.Log(Logger.LogType.Info, $"Cleaning up any temporary files...");
             ConsoleEx.WriteColouredLine($"{(last ? "\n\n" : "")}Cleaning up any temporary files... ", ConsoleColor.Yellow);
 
-            if (Directory.Exists(Program.OptionValues.TempPath))
+            if (Directory.Exists(Program.OptionValues.TempPath.LongPathSafe()))
             {
-                foreach (var file in Directory.GetFiles(Program.OptionValues.TempPath, "*.*", SearchOption.AllDirectories))
+                foreach (var file in Directory.GetFiles(Program.OptionValues.TempPath.LongPathSafe(), "*.*", SearchOption.AllDirectories))
                 {
                     try
                     {
-                        if (!(Path.GetDirectoryName(file).Contains(Program.OptionValues.LogPath) ||
-                            Path.GetDirectoryName(file).Contains(Path.Combine(Path.GetTempPath(), "FCE-Temp", "Logs"))))
+                        if (!(Path.GetDirectoryName(file.NormalPath()).Contains(Program.OptionValues.LogPath.NormalPath()) ||
+                            Path.GetDirectoryName(file.NormalPath()).Contains(Path.Combine(Path.GetTempPath(), "FCE-Temp", "Logs"))))
                         {
                             File.Delete(file);
                         }
@@ -479,7 +484,7 @@ namespace Fce
                 }
             }
             else
-                Directory.CreateDirectory(Program.OptionValues.TempPath);
+                Directory.CreateDirectory(Program.OptionValues.TempPath.LongPathSafe());
 
             Console.WriteLine();
             Program.Logger.Log(Logger.LogType.Info, "Temporary files clean complete");
