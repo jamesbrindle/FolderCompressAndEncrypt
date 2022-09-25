@@ -61,7 +61,7 @@ namespace Fce
 
             _compressor = new SevenZipCompressor(Program.OptionValues.TempPath);
             _compressor.EncryptHeaders = true;
-            _compressor.ZipEncryptionMethod = ZipEncryptionMethod.Aes128;
+            _compressor.ZipEncryptionMethod = ZipEncryptionMethod.Aes128;            
             _compressor.CompressionLevel = (CompressionLevel)Enum.Parse(typeof(CompressionLevel), Program.OptionValues.CompressionLevel.ToString());
 
             switch (Program.OptionValues.CompressionLevel)
