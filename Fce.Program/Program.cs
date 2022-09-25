@@ -26,41 +26,6 @@ namespace Fce
             ConsoleEx.WriteColouredLine("-- Folder Compress And Encrypt Utility --", ConsoleColor.Cyan);
             ConsoleEx.WriteColouredLine("-----------------------------------------\n", ConsoleColor.Cyan);
 
-            /*
-             * DEBUG
-            */
-#if DEBUG
-            // Compress
-            args = new string[] {
-                "-i", @"c:\temp",
-                "-o", @"c:\temp",
-                "-m", "none",
-                "-r",
-                "-l", // default log path
-                "-e",
-                "-c",
-                "-p", "SomePassword" };
-
-            // Extract
-            //args = new string[] {
-            //    "-i", @"c:\temp",
-            //    "-o", @"c:\temp",
-            //    "-m", "none",
-            //    "-r",
-            //    "-d",
-            //    "-l", // default log path
-            //    "-e",
-            //    "-c",
-            //    "-p", "SomePassword" };
-
-            // Help
-            //args = new string[] {
-            //    "-h" };
-#endif
-            /*
-             * DEBUG END
-            */
-
             if (args == null || args.Length == 0)
                 ConsoleEx.WriteColouredLine("Command line arguments expected! Use fla -h for options.", ConsoleColor.Yellow);
 
