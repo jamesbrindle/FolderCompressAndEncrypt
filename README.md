@@ -18,21 +18,22 @@ That's why this utility comes in handy, with the added bonus of reducing the res
 
 ## Command Flags
 
-| Option Set             | Description                                                                                                                                                                                                                                       |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   -i, --input=VALUE    | Input folder to compress.                                                                                                                                                                                                                         |
-|   -o, --output=VALUE   | Output folder of archives. The folder structure of input folder will be maintained. Don't worry if the input folder contains the output folder; on subsequant passes the output folder will be skipped.                                           |
-|   -t, --tempdir=VALUE  | You can optionally set a directory for the tempory files the tool uses when compressing files.                                                                                                                                                    |
-|   -l, --log\[=VALUE\]  | Enable creating a log and optionally set a log path. If you use the '-l' flag but don't set a path the log file will be placed in location: %LocalAppData%\\Temp\\FCE-Temp\\Logs                                                                  |
-|   -d, --decompress     | Decompress all the archives in a folder. If you password protected the archives you will need to provide this (-p=<your password>).                                                                                                               |
-|   -r, --recursive      | If 'recursive' flag is used, then all files in all subdirectories will be included, otherwise only the top level files in the output folder will be included.                                                                                     |
-|   -e, --encrypt        | Encrypt directory and filenames. Upon 'decompression' they will be restored.                                                                                                                                                                      |
-|   -p, --password=VALUE | Password to open archive (wrap in quotes if it contains spaces or special characters).                                                                                                                                                            |
-|   -f, --overwrite      | If the resulting file already exists it will be skipped. Use this option to force overwrite regardless.                                                                                                                                           |
-|   -m, --mode=VALUE     | File compression mode to use. If no value, then 'normal' will be used. In 'low' and 'normal' compression modes, the 'Deflate' algorithm will be used, in 'high' and 'ultra', the 'Lzma2' algorithm will be used. Higher compression takes longer. |
-|   -c, --clean          | Remove archives if the resulting files exist in the output folder but not the input folder (i.e. monitor source deletions).                                                                                                                       |
-|   -v, --version        | Shows the version number.                                                                                                                                                                                                                         |
-|   -h, -?, --help       | Show help and available arguments.                                                                                                                                                                                                                |
+| Option Set				| Description																																																																				|
+| -------------------------	| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   -i, --input=VALUE		| Input folder to compress.																																																																	|
+|   -o, --output=VALUE		| Output folder of archives. The folder structure of input folder will be maintained. Don't worry if the input folder contains the output folder; on subsequant passes the output folder will be skipped.																					|
+|   -t, --tempdir=VALUE		| You can optionally set a directory for the tempory files the tool uses when compressing files.																																															|
+|   -l, --log\[=VALUE\]		| Enable creating a log and optionally set a log path. If you use the '-l' flag but don't set a path the log file will be placed in location: %LocalAppData%\\Temp\\FCE-Temp\\Logs																											|
+|   -d, --decompress		| Decompress all the archives in a folder. If you password protected the archives you will need to provide this (-p=<your password>).																																						|
+|   -r, --recursive			| If 'recursive' flag is used, then all files in all subdirectories will be included, otherwise only the top level files in the output folder will be included.																																|
+|   -e, --encrypt			| Encrypt directory and filenames. Upon 'decompression' they will be restored.																																																				|
+|   -p, --password=VALUE	| Password to open archive (wrap in quotes if it contains spaces or special characters).																																																	|
+|   -f, --overwrite			| If the resulting file already exists it will be skipped. Use this option to force overwrite regardless.																																													|
+|   -m, --mode=VALUE		| File compression mode to use. If no value, then 'normal' will be used. In 'low' and 'normal' compression modes, the 'Deflate' algorithm will be used, in 'high' and 'ultra', the 'Lzma2' algorithm will be used. Higher compression takes longer.											|
+|   -c, --clean				| Remove archives if the resulting files exist in the output folder but not the input folder (i.e. monitor source deletions).																																								|
+|       --enable-long-paths | Requires elevated permissions (Run as Admin) - Sets the Windows registry to enable long path support as typically it's limited to 260 characters. If elevated process not detected it will be skipped. This flag can be used on its own or together with a compress /extract operation.	|
+|   -v, --version			| Shows the version number.																																																																	|
+|   -h, -?, --help			| Show help and available arguments.																																																														|
 
 ### Example Commands
 
@@ -82,9 +83,15 @@ fce -i "C:\Folder to Backup" -o "C:\Backup Location" -r -l
 ```
 fce -i "C:\Folder to Backup" -o "C:\Backup Location" -r -l"C:\Logs"
 ```
+
 ##### Monitor Deletions (Clean Output Files Without a Source File)
 ```
 fce -i "C:\Folder to Backup" -o "C:\Backup Location" -c
+```
+
+##### Enable Windows Long Path Support in the Registry
+```
+fce --enable-long-paths
 ```
 
 #### Advised Command For Encrypted, Password Protected, Recursively Scanned Input Folder, Using Medium Compression and Deletions Monitored, With Decent Compression
