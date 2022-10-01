@@ -29,7 +29,7 @@ namespace Fce
             {
                 SetCompressionOptions();
                 CompressFilesList();
-                if (Program.OptionValues.Clean)
+                if (Program.OptionValues.Sync)
                     DeleteArchivesWithoutSource();
             }
             else
@@ -201,8 +201,23 @@ namespace Fce
                             }
                             else
                             {
-                                Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Skipping");
-                                ConsoleEx.WriteColoured($" Already exists: Skipping", ConsoleColor.Green);
+                                if (Program.OptionValues.Check)
+                                {
+                                    Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Verifying archive...");
+                                    if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), out string invalidReason))
+                                    {
+                                        Program.Logger.Log(Logger.LogType.Warning, $"  - Archive invalid - Recompressing...");
+                                        File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
+                                        CompressFile(file, Path.Combine(outputDirectory, outputFilename));
+                                    }
+                                    else
+                                        Program.Logger.Log(Logger.LogType.Info, $"  - Archive valid");
+                                }
+                                else 
+                                {
+                                    Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Skipping");
+                                    ConsoleEx.WriteColoured($" Already exists: Skipping", ConsoleColor.Green);
+                                }
                             }
                         }
                         else
@@ -240,6 +255,79 @@ namespace Fce
                 _compressor.CompressFilesEncrypted(outputFile.LongPathSafe(), Program.OptionValues.Password, inputFile.NormalPath());
             else
                 _compressor.CompressFiles(outputFile.LongPathSafe(), inputFile.NormalPath());
+
+            if (Program.OptionValues.Check)
+            {
+                Program.Logger.Log(Logger.LogType.Info, "  - Verifying archive...");
+                bool valid = CheckArchive(outputFile.LongPathSafe(), out string invalidReason);
+
+                if (!valid)
+                {
+                    Program.Logger.Log(Logger.LogType.Info, $"  - Check failed: {invalidReason}. Try compress 1 more time...");
+
+                    File.Delete(outputFile.LongPathSafe());
+
+                    if (!string.IsNullOrEmpty(Program.OptionValues.Password))
+                        _compressor.CompressFilesEncrypted(outputFile.LongPathSafe(), Program.OptionValues.Password, inputFile.NormalPath());
+                    else
+                        _compressor.CompressFiles(outputFile.LongPathSafe(), inputFile.NormalPath());
+
+                    valid = CheckArchive(outputFile.LongPathSafe(), out invalidReason);
+
+                    if (!valid)
+                    {
+                        ConsoleEx.WriteColoured($" Output file check fail: {invalidReason}: Skipping", ConsoleColor.Red);
+                        Program.Logger.Log(Logger.LogType.Error, " - Output file check fail: {invalidReason} - Skipping");
+
+                        try
+                        {
+                            File.Delete(outputFile.LongPathSafe());
+                        }
+                        catch { }
+                    }
+                    else
+                        Program.Logger.Log(Logger.LogType.Info, "  - Recompress successful");
+                }
+                else
+                    Program.Logger.Log(Logger.LogType.Info, "  - Archive valid");
+            }
+        }
+
+        /// <summary>
+        /// Verify the archive
+        /// </summary>
+        /// <param name="archiveFilePath">Path to archive file</param>
+        /// <param name="invalidReason">Output fail reason</param>
+        /// <returns>True if valid, false otherwise</returns>
+        private static bool CheckArchive(string archiveFilePath, out string invalidReason)
+        {
+            invalidReason = null;
+            bool valid;
+
+            if (new FileInfo(archiveFilePath.LongPathSafe()).Length == 0)
+            {
+                valid = false;
+                invalidReason = "Zero byte archive";
+
+                return valid;
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(Program.OptionValues.Password))
+                    _extractor = new SevenZipExtractor(archiveFilePath, Program.OptionValues.Password);
+                else
+                    _extractor = new SevenZipExtractor(archiveFilePath);
+
+                valid = _extractor.Check();
+            }
+            catch
+            {
+                valid = false;
+                invalidReason = "Exception encountered in check";
+            }
+
+            return valid;
         }
 
         /// <summary>

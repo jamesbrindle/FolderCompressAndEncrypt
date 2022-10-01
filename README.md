@@ -30,7 +30,8 @@ That's why this utility comes in handy, with the added bonus of reducing the res
 |   -p, --password=VALUE	| Password to open archive (wrap in quotes if it contains spaces or special characters).																																																	|
 |   -f, --overwrite			| If the resulting file already exists it will be skipped. Use this option to force overwrite regardless.																																													|
 |   -m, --mode=VALUE		| File compression mode to use. If no value, then 'normal' will be used. In 'low' and 'normal' compression modes, the 'Deflate' algorithm will be used, in 'high' and 'ultra', the 'Lzma2' algorithm will be used. Higher compression takes longer.											|
-|   -c, --clean				| Remove archives if the resulting files exist in the output folder but not the input folder (i.e. monitor source deletions).																																								|
+|   -s, --sync				| Remove archives if the resulting files exist in the output folder but not the input folder (synchronise - i.e. monitor source deletions).																																					|
+|   -c, --check				| Run a check on the archive to see if it has been compressed successfully. Useful if say, you run this utility on a scheduled task, and you don't want to worry if it's safe to shutdown your computer while this program is running and has only created an empty archive.				|
 |       --enable-long-paths | Requires elevated permissions (Run as Admin) - Sets the Windows registry to enable long path support as typically it's limited to 260 characters. If elevated process not detected it will be skipped. This flag can be used on its own or together with a compress /extract operation.	|
 |   -v, --version			| Shows the version number.																																																																	|
 |   -h, -?, --help			| Show help and available arguments.																																																														|
@@ -85,6 +86,11 @@ fce -i "C:\Folder to Backup" -o "C:\Backup Location" -r -l"C:\Logs"
 ```
 
 ##### Monitor Deletions (Clean Output Files Without a Source File)
+```
+fce -i "C:\Folder to Backup" -o "C:\Backup Location" -s
+```
+
+##### Check / Verify Archive After Compressing or Synching
 ```
 fce -i "C:\Folder to Backup" -o "C:\Backup Location" -c
 ```

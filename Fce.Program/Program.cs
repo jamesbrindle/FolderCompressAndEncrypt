@@ -22,32 +22,33 @@ namespace Fce
         {
 #if DEBUG
             // Compress
-            args = new string[] {
-                "-i", @"C:\Temp",
-                "-o", @"C:\Temp",
-                "-m", "none",
-                "-r",
-                "-l", // default log path
-                "-e",
-                "-c",
-                "-p", "SomePassword",
-                "--enable-long-paths" };
+            //args = new string[] {
+            //    "-i", @"C:\Temp",
+            //    "-o", @"C:\Temp",
+            //    "-m", "none",
+            //    "-p", "SomePassword",
+            //    "-r",
+            //    "-l", // default log path
+            //    "-e",
+            //    "-c",
+            //    "-s",
+            //    "--enable-long-paths" };
 
             // Extract
-            args = new string[] {
-                "-i", @"C:\Temp",
-                "-o", @"C:\Temp",
-                "-r",
-                "-d",
-                "-l", // default log path
-                "-e",
-                "-c",
-                "-p", "SomePassword",
-                "--enable-long-paths"};
+            //args = new string[] {
+            //    "-i", @"C:\Temp",
+            //    "-o", @"C:\Temp",
+            //    "-r",
+            //    "-d",
+            //    "-l", // default log path
+            //    "-e",
+            //    "-c",
+            //    "-p", "SomePassword",
+            //    "--enable-long-paths"};
 
             // Help
-            //args = new string[] {
-            //     "-h" };
+            args = new string[] {
+                 "-h" };
 
             // Enable windows long path support in registry
             //args = new string[] {
@@ -110,12 +111,16 @@ namespace Fce
                             ? Models.Enums.CompressionLevel.Normal
                             : (Models.Enums.CompressionLevel) Enum.Parse(typeof(Models.Enums.CompressionLevel), v, true ) },
 
-                { "c|clean",
-                  OptionValues.Clean.Description<OptionValues>("Clean"),
-                  (v) => OptionValues.Clean = v != null },
+                { "s|sync",
+                  OptionValues.Sync.Description<OptionValues>("Clean"),
+                  (v) => OptionValues.Sync = v != null },
+
+                { "c|check",
+                  OptionValues.Sync.Description<OptionValues>("Check"),
+                  (v) => OptionValues.Check = v != null },
 
                 { "enable-long-paths",
-                  OptionValues.Clean.Description<OptionValues>("EnableWindowsLongPathSupport"),
+                  OptionValues.Sync.Description<OptionValues>("EnableWindowsLongPathSupport"),
                   (v) => OptionValues.EnableWindowsLongPathSupport = v != null },
 
                 { "v|version",
@@ -152,7 +157,7 @@ namespace Fce
                     ConsoleEx.WordWrap("Remember to wrap paths that contains spaces with double quotes, i.e: \"C:\\Some Path\\Some Subpath\".");
                     ConsoleEx.EndParagraph();
                     Console.WriteLine();
-                    ConsoleEx.WriteColouredLine("The available options / arguments are as follows:\n", ConsoleColor.Yellow);
+                    ConsoleEx.WriteColouredLine("\nThe available options / arguments are as follows:\n", ConsoleColor.Yellow);
 
                     p.WriteOptionDescriptions(Console.Out);
                     return;
@@ -254,7 +259,7 @@ namespace Fce
                     Logger.Log(Logger.LogType.Info, $"  - Password protected: {(string.IsNullOrEmpty(OptionValues.Password) ? "False" : "True")}");
                     Logger.Log(Logger.LogType.Info, $"  - Force overwrite: {OptionValues.ForceOverwrite}");
                     Logger.Log(Logger.LogType.Info, $"  - Compression level: {OptionValues.CompressionLevel}");
-                    Logger.Log(Logger.LogType.Info, $"  - Monitor for deletions: {OptionValues.Clean}");
+                    Logger.Log(Logger.LogType.Info, $"  - Monitor for deletions: {OptionValues.Sync}");
 
                     Logger.Space();
                 }

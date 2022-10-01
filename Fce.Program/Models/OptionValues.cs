@@ -95,9 +95,19 @@ namespace Fce.Models
         /// <summary>
         /// Remove archives if the resulting files exist in the output folder but not the input folder (i.e. monitor source deletions).
         /// </summary>
-        [Description("Remove archives if the resulting files exist in the output folder but not the input folder " +
+        [Description("Remove archives if the resulting files exist in the output folder but not the input folder (syncrhonise) " +
                     "(i.e. monitor source deletions).")]
-        public bool Clean { get; set; } = false;
+        public bool Sync { get; set; } = false;
+
+        /// <summary>
+        /// Check the archive has been created successfully by opening it after compression. Useful if say, you run this utility on a
+        /// scheduled task, and you don't want to worry if it's safe to shutdown your computer while this program is running and has
+        /// only created an empty archive.
+        /// </summary>
+        [Description("Run a check on the archive to see if it has been compressed successfully. Useful if say, you run this utility on a " +
+                     "scheduled task, and you don't want to worry if it's safe to shutdown your computer while this program is running and has " +
+                     "only created an empty archive.")]
+        public bool Check { get; set; } = false;
 
         /// <summary>
         /// Show help and available arguments.
