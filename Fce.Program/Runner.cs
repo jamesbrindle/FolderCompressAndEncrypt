@@ -207,11 +207,16 @@ namespace Fce
                                     if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), out string invalidReason))
                                     {
                                         Program.Logger.Log(Logger.LogType.Warning, $"  - Archive invalid - Recompressing...");
+                                        ConsoleEx.WriteColoured($" Already exists, archive invalid - Recompressing...", ConsoleColor.Yellow);
+
                                         File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
                                         CompressFile(file, Path.Combine(outputDirectory, outputFilename));
                                     }
                                     else
+                                    {
                                         Program.Logger.Log(Logger.LogType.Info, $"  - Archive valid");
+                                        ConsoleEx.WriteColoured($" Already exists: Archive valid", ConsoleColor.Green);
+                                    }
                                 }
                                 else 
                                 {
