@@ -204,9 +204,9 @@ namespace Fce
                                 if (Program.OptionValues.Check)
                                 {
                                     Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Verifying archive...");
-                                    if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), out string invalidReason))
+                                    if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), file, out string invalidReason))
                                     {
-                                        Program.Logger.Log(Logger.LogType.Warning, $"  - Archive invalid - Recompressing...");
+                                        Program.Logger.Log(Logger.LogType.Warning, $"  - Archive {(invalidReason == "Original size and current file size do not match" ? "size does not match" : "invalid")} - Recompressing...");
                                         ConsoleEx.WriteColoured($" Already exists, archive invalid - Recompressing...", ConsoleColor.Yellow);
 
                                         File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
@@ -264,7 +264,7 @@ namespace Fce
             if (Program.OptionValues.Check)
             {
                 Program.Logger.Log(Logger.LogType.Info, "  - Verifying archive...");
-                bool valid = CheckArchive(outputFile.LongPathSafe(), out string invalidReason);
+                bool valid = CheckArchive(outputFile.LongPathSafe(), inputFile, out string invalidReason);
 
                 if (!valid)
                 {
@@ -277,7 +277,7 @@ namespace Fce
                     else
                         _compressor.CompressFiles(outputFile.LongPathSafe(), inputFile.NormalPath());
 
-                    valid = CheckArchive(outputFile.LongPathSafe(), out invalidReason);
+                    valid = CheckArchive(outputFile.LongPathSafe(), inputFile, out invalidReason);
 
                     if (!valid)
                     {
@@ -304,7 +304,7 @@ namespace Fce
         /// <param name="archiveFilePath">Path to archive file</param>
         /// <param name="invalidReason">Output fail reason</param>
         /// <returns>True if valid, false otherwise</returns>
-        private static bool CheckArchive(string archiveFilePath, out string invalidReason)
+        private static bool CheckArchive(string archiveFilePath, string currentFilePath, out string invalidReason)
         {
             invalidReason = null;
             bool valid;
@@ -315,14 +315,38 @@ namespace Fce
                 invalidReason = "Zero byte archive";
 
                 return valid;
-            }
+            }            
 
             try
             {
+                var currentFileLength = new FileInfo(currentFilePath).Length;
+
                 if (!string.IsNullOrEmpty(Program.OptionValues.Password))
+                {
                     _extractor = new SevenZipExtractor(archiveFilePath, Program.OptionValues.Password);
+                    var originalFileSize = _extractor.ArchiveFileData[0].Size;
+
+                    if ((long)currentFileLength != (long)originalFileSize)
+                    {
+                        valid = false;
+                        invalidReason = "Original size and current file size do not match";
+
+                        return valid;
+                    }
+                }
                 else
+                {
                     _extractor = new SevenZipExtractor(archiveFilePath);
+                    var originalFileSize = _extractor.ArchiveFileData[0].Size;
+
+                    if ((long)currentFileLength != (long)originalFileSize)
+                    {
+                        valid = false;
+                        invalidReason = "Original size and current file size do not match";
+
+                        return valid;
+                    }
+                }
 
                 valid = _extractor.Check();
             }
