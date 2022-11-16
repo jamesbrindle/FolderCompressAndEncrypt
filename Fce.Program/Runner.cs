@@ -218,7 +218,7 @@ namespace Fce
                                         ConsoleEx.WriteColoured($" Already exists: Archive valid", ConsoleColor.Green);
                                     }
                                 }
-                                else 
+                                else
                                 {
                                     Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Skipping");
                                     ConsoleEx.WriteColoured($" Already exists: Skipping", ConsoleColor.Green);
@@ -315,7 +315,7 @@ namespace Fce
                 invalidReason = "Zero byte archive";
 
                 return valid;
-            }            
+            }
 
             try
             {
@@ -523,6 +523,10 @@ namespace Fce
                                 _extractor = new SevenZipExtractor(file);
 
                             string tailDirectory = Path.GetDirectoryName(file).Replace(Program.OptionValues.InputFolder, "").TrimStart('\\');
+
+                            if (string.IsNullOrEmpty(tailDirectory) || tailDirectory == "\\")
+                                tailDirectory = Path.GetFileName(Program.OptionValues.InputFolder);
+
                             string[] tailDirSplit = tailDirectory.Split(Path.DirectorySeparatorChar);
                             string unencryptedDirectory = string.Empty;
 

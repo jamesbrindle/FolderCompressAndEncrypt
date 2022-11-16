@@ -35,20 +35,20 @@ namespace Fce
             //    "--enable-long-paths" };
 
             // Extract
-            //args = new string[] {
-            //    "-i", @"C:\Temp",
-            //    "-o", @"C:\Temp",
-            //    "-r",
-            //    "-d",
-            //    "-l", // default log path
-            //    "-e",
-            //    "-c",
-            //    "-p", "SomePassword",
-            //    "--enable-long-paths"};
+            args = new string[] {
+                "-i", @"C:\Temp\ŠH4sIÿAEACtJLS4BɄAx+f9gEƒA",
+                "-o", @"C:\Temp",
+                "-r",
+                "-d",
+                "-l", // default log path
+                "-e",
+                "-c",
+                "-p", "test",
+                "--enable-long-paths"};
 
             // Help
-            args = new string[] {
-                 "-h" };
+            //args = new string[] {
+            //     "-h" };
 
             // Enable windows long path support in registry
             //args = new string[] {
