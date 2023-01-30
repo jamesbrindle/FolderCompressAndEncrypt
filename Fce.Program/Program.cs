@@ -47,12 +47,12 @@ namespace Fce
             //    "--enable-long-paths"};
 
             // Help
-            args = new string[] {
-                 "-h" };
+            //args = new string[] {
+            //     "-h" };
 
             // Enable windows long path support in registry
-            //args = new string[] {
-            //    "--enable-long-paths" };
+            args = new string[] {
+                "--enable-long-paths" };
 #endif
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
 

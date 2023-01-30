@@ -204,18 +204,38 @@ namespace Fce
                                 if (Program.OptionValues.Check)
                                 {
                                     Program.Logger.Log(Logger.LogType.Info, $"  - Already exists at destination - Verifying archive...");
-                                    if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), file, out string invalidReason))
-                                    {
-                                        Program.Logger.Log(Logger.LogType.Warning, $"  - Archive {(invalidReason == "Original size and current file size do not match" ? "size does not match" : "invalid")} - Recompressing...");
-                                        ConsoleEx.WriteColoured($" Already exists, archive invalid - Recompressing...", ConsoleColor.Yellow);
 
-                                        File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
-                                        CompressFile(file, Path.Combine(outputDirectory, outputFilename));
+                                    bool isFileLocked = false;
+                                    try
+                                    {
+                                        isFileLocked = FileUtil.WhoIsLocking(Path.Combine(outputDirectory, outputFilename)).Count > 0;
+                                    }
+                                    catch
+                                    {
+                                        isFileLocked = true;
+                                    }
+
+                                    if (!isFileLocked)
+                                    {
+                                        if (!CheckArchive(Path.Combine(outputDirectory, outputFilename), file, out string invalidReason))
+                                        {
+                                            Program.Logger.Log(Logger.LogType.Warning, $"  - Archive {(invalidReason == "Original size and current file size do not match" ? "size does not match" : "invalid")} - Recompressing...");
+                                            ConsoleEx.WriteColoured($" Already exists, archive invalid - Recompressing...", ConsoleColor.Yellow);
+
+                                            File.Delete(Path.Combine(outputDirectory, outputFilename).LongPathSafe());
+                                            CompressFile(file, Path.Combine(outputDirectory, outputFilename));
+                                        }
+                                        else
+                                        {
+                                            Program.Logger.Log(Logger.LogType.Info, $"  - Archive valid");
+                                            ConsoleEx.WriteColoured($" Already exists: Archive valid", ConsoleColor.Green);
+
+                                        }
                                     }
                                     else
                                     {
-                                        Program.Logger.Log(Logger.LogType.Info, $"  - Archive valid");
-                                        ConsoleEx.WriteColoured($" Already exists: Archive valid", ConsoleColor.Green);
+                                        Program.Logger.Log(Logger.LogType.Info, $"  - Archive in use. Can't check validity");
+                                        ConsoleEx.WriteColoured($" Already exists: Archive in use so can't determine validity. Skipping this time.", ConsoleColor.Green);
                                     }
                                 }
                                 else
@@ -264,7 +284,24 @@ namespace Fce
             if (Program.OptionValues.Check)
             {
                 Program.Logger.Log(Logger.LogType.Info, "  - Verifying archive...");
-                bool valid = CheckArchive(outputFile.LongPathSafe(), inputFile, out string invalidReason);
+
+                bool valid;
+                string invalidReason = string.Empty;
+
+                bool isFileLocked;
+                try
+                {
+                    isFileLocked = FileUtil.WhoIsLocking(outputFile.LongPathSafe()).Count > 0;
+                }
+                catch
+                {
+                    isFileLocked = true;
+                }
+
+                if (isFileLocked)
+                    valid = true;
+                else
+                    valid = CheckArchive(outputFile.LongPathSafe(), inputFile, out invalidReason);
 
                 if (!valid)
                 {
